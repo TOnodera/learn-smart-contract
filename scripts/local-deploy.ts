@@ -1,5 +1,4 @@
 import { ethers } from "hardhat";
-import { MyERC721__factory } from "../typechain-types";
 
 async function main() {
   const myToken = await ethers.deployContract("MyToken");
