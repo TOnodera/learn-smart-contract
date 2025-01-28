@@ -1,12 +1,13 @@
 "use client";
 
 import { Web3SignerContext } from "@/context/web3.context";
-import { ethers } from "ethers";
+import { isError } from "ethers";
 import { useContext, useEffect, useRef, useState } from "react";
 import { MyERC721, MyERC721__factory } from "@/types";
 import {
   Alert,
   Avatar,
+  Badge,
   Button,
   Card,
   Container,
@@ -17,15 +18,57 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconCubePlus } from "@tabler/icons-react";
+import { IconCubePlus, IconSignalH } from "@tabler/icons-react";
+import Image from "next/image";
 
 const contractAddress = process.env.NEXT_PUBLIC_APP_CONTRACT_ADDRESS!;
+
+type NFT = {
+  tokenId: bigint;
+  name: string;
+  description: string;
+  image: string;
+};
 
 export default function MyNFT() {
   const { signer } = useContext(Web3SignerContext);
   const [myERC721Contract, setMyERC721Contract] = useState<MyERC721 | null>(
     null
   );
+  const [myNFTs, setMyNFTs] = useState<NFT[]>([]);
+  useEffect(() => {
+    const fetchMyNFTs = async () => {
+      const nfts = [];
+      if (myERC721Contract && myERC721Contract.runner) {
+        const myAddress = await signer?.getAddress()!;
+        let balance = BigInt(0);
+        try {
+          balance = await myERC721Contract.balanceOf(myAddress);
+        } catch (err) {
+          if (isError(err, "BAD_DATA")) {
+            balance = BigInt(0);
+          } else {
+            throw err;
+          }
+        }
+
+        for (let i = 0; i < balance; i++) {
+          const tokenId = await myERC721Contract.tokenOfOwnerByIndex(
+            myAddress,
+            i
+          );
+          const jsonMetaData = {
+            name: `NFT #${tokenId}`,
+            description: "explain this token",
+            image: `https://source.unsplash.com/300x200?glass&s=${tokenId}`,
+            tokenId,
+          };
+          nfts.push(jsonMetaData);
+        }
+        setMyNFTs(nfts);
+      }
+    };
+  }, [myERC721Contract, signer]);
 
   useEffect(() => {
     const contract = MyERC721__factory.connect(contractAddress, signer);
@@ -106,6 +149,23 @@ export default function MyNFT() {
             </Button>
           </Stack>
         </Card>
+        {/** NFT 一覧*/}
+        {myNFTs.map((nft, index) => (
+          <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
+            <Card.Section>
+              <Image src={nft.image} height={160} alt="No image" />
+            </Card.Section>
+            <Group justify="space-between" mt="md" mb="xs">
+              <Text fw={500}>{nft.name}</Text>
+              <Badge color="blue" variant="light">
+                tokenId: {nft.tokenId.toString()}
+              </Badge>
+            </Group>
+            <Text size="sm" c="dimmed">
+              {nft.description}
+            </Text>
+          </Card>
+        ))}
       </SimpleGrid>
     </div>
   );
