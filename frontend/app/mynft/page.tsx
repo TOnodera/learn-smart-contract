@@ -3,7 +3,7 @@
 import { Web3SignerContext } from "@/context/web3.context";
 import { ethers } from "ethers";
 import { useContext, useEffect, useRef, useState } from "react";
-import artifact from "../../abi/MyERC721.sol/MyERC721.json";
+import { MyERC721, MyERC721__factory } from "@/types";
 import {
   Alert,
   Avatar,
@@ -19,19 +19,16 @@ import {
 } from "@mantine/core";
 import { IconCubePlus } from "@tabler/icons-react";
 
-const contractAddress = process.env.CONTRACT_ADDRESS;
+const contractAddress = process.env.NEXT_PUBLIC_APP_CONTRACT_ADDRESS!;
 
 export default function MyNFT() {
   const { signer } = useContext(Web3SignerContext);
-  const [myERC721Contract, setMyERC721Contract] =
-    useState<ethers.Contract | null>(null);
+  const [myERC721Contract, setMyERC721Contract] = useState<MyERC721 | null>(
+    null
+  );
 
   useEffect(() => {
-    const contract = new ethers.Contract(
-      contractAddress!,
-      artifact.abi,
-      signer
-    );
+    const contract = MyERC721__factory.connect(contractAddress, signer);
     setMyERC721Contract(contract);
 
     const fillAddress = async () => {
