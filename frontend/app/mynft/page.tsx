@@ -4,6 +4,7 @@ import { Web3SignerContext } from "@/context/web3.context";
 import { isError } from "ethers";
 import { useContext, useEffect, useRef, useState } from "react";
 import { MyERC721, MyERC721__factory } from "@/types";
+import CoinImage from "@/public/coin.jpg";
 import {
   Alert,
   Avatar,
@@ -18,7 +19,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconCubePlus, IconSignalH } from "@tabler/icons-react";
+import { IconCubePlus } from "@tabler/icons-react";
 import Image from "next/image";
 
 const contractAddress = process.env.NEXT_PUBLIC_APP_CONTRACT_ADDRESS!;
@@ -68,6 +69,7 @@ export default function MyNFT() {
         setMyNFTs(nfts);
       }
     };
+    fetchMyNFTs();
   }, [myERC721Contract, signer]);
 
   useEffect(() => {
@@ -153,7 +155,7 @@ export default function MyNFT() {
         {myNFTs.map((nft, index) => (
           <Card key={index} shadow="sm" padding="lg" radius="md" withBorder>
             <Card.Section>
-              <Image src={nft.image} height={160} alt="No image" />
+              <Image src={CoinImage} height={160} alt="No image" />
             </Card.Section>
             <Group justify="space-between" mt="md" mb="xs">
               <Text fw={500}>{nft.name}</Text>
