@@ -17,6 +17,16 @@ async function main() {
   ]);
   await myERC721.waitForDeployment();
   console.log(`MyERC20 deployed to: ${myERC721.target}`);
+
+  // seaportのデプロイ
+  const conduitController = await ethers.deployContract("ConduitController");
+  await conduitController.waitForDeployment();
+  const conduitControllerAddress = await conduitController.getAddress();
+  const seaport = await ethers.deployContract("Seaport", [
+    conduitControllerAddress,
+  ]);
+  await seaport.waitForDeployment();
+  console.log(`Seaport deployed to: ${seaport.target}`);
 }
 
 main().catch(console.error);
