@@ -16,7 +16,7 @@ async function main() {
     "MYERC721",
   ]);
   await myERC721.waitForDeployment();
-  console.log(`MyERC20 deployed to: ${myERC721.target}`);
+  console.log(`MyERC721 deployed to: ${myERC721.target}`);
 
   // seaportのデプロイ
   const conduitController = await ethers.deployContract("ConduitController");

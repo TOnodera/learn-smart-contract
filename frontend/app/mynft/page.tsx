@@ -29,7 +29,7 @@ import { ItemType } from "@opensea/seaport-js/lib/constants";
 import { CreateOrderInput } from "@opensea/seaport-js/lib/types";
 
 const contractAddress = process.env.NEXT_PUBLIC_APP_CONTRACT_ADDRESS!;
-const seaportAddress = process.env.PUBLIC_NEXT_APP_SEAPORT_ADDRESS!;
+const seaportAddress = process.env.NEXT_PUBLIC_APP_SEAPORT_ADDRESS!;
 
 type NFT = {
   tokenId: bigint;
@@ -138,7 +138,7 @@ export default function MyNFT() {
   }, [signer]);
 
   // 売り注文作成モーダルの表示コントロール
-  const [opened, { open, close }] = useDisclosure();
+  const [opened, { open, close }] = useDisclosure(false);
   // NFT売却における価格データを保持する
   const refSellOrder = useRef<HTMLInputElement>(null);
   // NFT作成中のローディング
